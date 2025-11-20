@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Campus Connect | Resources</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar collapsed">
+        <div class="sidebar-header">
+          <h2>Campus Connect</h2>
+        </div>
+        <nav class="sidebar-nav">
+          <ul>
+            <li>
+              <a href="../index.html"
+                ><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a
+              >
+            </li>
+            <li>
+              <a href="student.html"
+                ><i class="fas fa-user-graduate"></i> <span>Students</span></a
+              >
+            </li>
+            <li>
+              <a href="faculty.html"
+                ><i class="fas fa-chalkboard-teacher"></i>
+                <span>Faculty</span></a
+              >
+            </li>
+            <li>
+              <a href="alumni.html"
+                ><i class="fas fa-user-tie"></i> <span>Alumni</span></a
+              >
+            </li>
+            <li>
+              <a href="clubs.html"
+                ><i class="fas fa-users-cog"></i> <span>Clubs</span></a
+              >
+            </li>
+            <li>
+              <a href="events.html"
+                ><i class="fas fa-calendar-alt"></i> <span>Events</span></a
+              >
+            </li>
+            <li>
+              <a href="complaint.html"
+                ><i class="fas fa-clipboard-list"></i>
+                <span>Complaints</span></a
+              >
+            </li>
+            <li>
+              <a href="attendance.html"
+                ><i class="fas fa-user-check"></i> <span>Attendance</span></a
+              >
+            </li>
+            <li>
+              <a href="resources.html" class="active"
+                ><i class="fas fa-book"></i> <span>Resources</span></a
+              >
+            </li>
+            <li>
+              <a href="career.html"
+                ><i class="fas fa-briefcase"></i> <span>Career Portal</span></a
+              >
+            </li>
+            <li>
+              <a href="ai-tools.html"
+                ><i class="fas fa-robot"></i> <span>AI Tools</span></a
+              >
+            </li>
+            <li>
+              <a href="campus-map.html"
+                ><i class="fas fa-map-marked-alt"></i>
+                <span>Campus Map</span></a
+              >
+            </li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="top-bar">
+          <div class="search-container">
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search..."
+              autocomplete="off"
+            />
+            <i class="fas fa-search search-icon"></i>
+            <div id="search-results-container"></div>
+          </div>
+          <div class="top-bar-actions">
+            <div class="theme-toggle">
+              <i class="fas fa-sun light-icon"></i>
+              <i class="fas fa-moon dark-icon"></i>
+            </div>
+            <div class="profile-avatar">
+              <img src="https://via.placeholder.com/40" alt="Profile" />
+              <div class="profile-details">
+                <p class="user-info" id="username">Username (Role)</p>
+                <button id="upload-image-btn">Change Profile Image</button>
+                <button id="edit-profile-btn">Edit Profile</button>
+                <input
+                  type="file"
+                  id="image-input"
+                  style="display: none"
+                  accept="image/*"
+                />
+                <button id="logout-btn">Log out</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <section class="resources-section">
+          <div class="card-header-action">
+            <h1>Shared Resources</h1>
+            <button id="upload-resource-btn" class="profile-action-btn">
+              <i class="fas fa-upload"></i> Upload Resource
+            </button>
+          </div>
+
+          <div class="filter-controls">
+            <input type="text" id="resource-search-bar" placeholder="Search in resources..." class="form-container" />
+            <select id="resource-branch-filter">
+              <option value="all">All Branches</option>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+            </select>
+            <select id="resource-year-filter">
+              <option value="all">All Years</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+            <button id="my-uploads-btn" class="profile-action-btn">My Uploads</button>
+          </div>
+
+          <div id="resources-container" class="card-container"></div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Upload Resource Modal -->
+    <div id="resource-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 id="resource-modal-title">Upload a New Resource</h2>
+        <form id="resource-form">
+          <input type="hidden" id="resource-id" />
+          <div class="form-group">
+            <label for="resource-title">Title</label>
+            <input type="text" id="resource-title" required />
+          </div>
+          <div class="form-group">
+            <label for="resource-description">Description</label>
+            <textarea id="resource-description" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="resource-branch">Branch</label>
+            <select id="resource-branch" required>
+              <option value="Information Technology">Information Technology</option>
+              <option value="Electrical Engineering">Electrical Engineering</option>
+              <option value="Mechanical Engineering">Mechanical Engineering</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="resource-year">Year</label>
+            <select id="resource-year" required>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="resource-file">File (Optional if editing)</label>
+            <input type="file" id="resource-file" />
+          </div>
+          <div class="modal-actions">
+            <button type="button" id="cancel-resource-btn" class="cancel-btn">Cancel</button>
+            <button type="submit" class="save-btn">Upload</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- NEW: My Uploads Modal -->
+    <div id="my-uploads-modal" class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>My Uploaded Resources</h2>
+          <button id="close-my-uploads-modal-btn" class="close-modal-btn">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body" id="my-uploads-list">
+          <!-- User's uploaded resources will be rendered here by JS -->
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/data.js"></script>
+    <script src="../js/career-data.js"></script>
+    <script src="../js/ai-tools-data.js"></script>
+    <script type="module" src="../js/resources.js"></script>
+    <script type="module" src="../js/script.js"></script>
+  </body>
+</html>
