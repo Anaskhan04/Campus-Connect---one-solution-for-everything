@@ -1,5 +1,6 @@
 import { getStorageItem, setStorageItem } from './storage.js';
 import { STORAGE_KEYS } from './config.js';
+import { showToast } from './ui.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const loggedInUser = getStorageItem(STORAGE_KEYS.LOGGED_IN_USER);
@@ -170,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (resourceId) { // If editing without changing the file
                 processAndSave(null, null);
             } else {
-                alert("Please select a file to upload.");
+                showToast("Please select a file to upload.", "warning");
             }
         });
     }
@@ -237,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     saveResources(resources);
                     renderMyUploads(); // Re-render the list in the modal
                     renderResources(); // Also re-render the main page view
+                    showToast("Resource deleted.", "success");
                 }
             }
         });

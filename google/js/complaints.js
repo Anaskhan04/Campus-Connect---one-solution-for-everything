@@ -1,6 +1,7 @@
 import { getStorageItem } from './storage.js';
 import { STORAGE_KEYS } from './config.js';
 import { api } from './api.js';
+import { showToast } from './ui.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const complaintForm = document.getElementById("complaint-form");
@@ -108,8 +109,9 @@ document.addEventListener("DOMContentLoaded", () => {
           try {
             await api.deleteComplaint(complaintIdToDelete);
             await loadComplaints();
+            showToast("Complaint deleted.", "success");
           } catch (error) {
-            alert(`Error: ${error.message}`);
+            showToast(error.message || "Failed to delete complaint.", "error");
           }
         }
       }
@@ -132,12 +134,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const newComplaint = await api.createComplaint(complaintData);
-        alert(`Complaint submitted! Your Complaint ID is ${newComplaint._id.substring(0, 8)}`);
+        showToast(
+          `Complaint submitted! Your ID is ${newComplaint._id.substring(0, 8)}`,
+          "success"
+        );
         complaintForm.reset();
         subCategoryContainer.style.display = "none";
         await loadComplaints();
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        showToast(error.message || "Failed to submit complaint.", "error");
       }
     });
   }

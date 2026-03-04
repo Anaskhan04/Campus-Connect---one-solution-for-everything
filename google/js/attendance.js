@@ -1,5 +1,6 @@
 import { getStorageItem, setStorageItem } from './storage.js';
 import { STORAGE_KEYS } from './config.js';
+import { showToast } from './ui.js';
 
 document.addEventListener("DOMContentLoaded", () => {
     const loggedInUser = getStorageItem(STORAGE_KEYS.LOGGED_IN_USER);
@@ -145,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     saveBtn.addEventListener('click', () => {
         const selectedDate = attendanceDateInput.value;
         if (!selectedDate) {
-            alert('Please select a date first.');
+            showToast('Please select a date first.', 'warning');
             return;
         }
 
@@ -170,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         setStorageItem(ATTENDANCE_KEY, allAttendanceData);
-        alert('Attendance for ' + selectedDate + ' saved successfully!');
+        showToast('Attendance for ' + selectedDate + ' saved successfully!', 'success');
 
         // Dispatch a custom event to notify the dashboard to update
         window.dispatchEvent(new CustomEvent('attendanceUpdated'));

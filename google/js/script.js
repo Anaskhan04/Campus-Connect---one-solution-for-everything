@@ -2,6 +2,7 @@ import { getStorageItem, setStorageItem, removeStorageItem } from './storage.js'
 import { STORAGE_KEYS } from './config.js';
 import { calculateAttendance } from './attendance.js';
 import { api } from './api.js';
+import { showToast } from './ui.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   // --- AUTHENTICATION & UI LOGIC ---
@@ -146,8 +147,9 @@ if (
         // NEW: Add a file size check (2MB limit)
         const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
         if (file.size > MAX_FILE_SIZE) {
-          alert(
-            "Error: The selected image is too large. Please choose an image smaller than 2 MB."
+          showToast(
+            "The selected image is too large. Please choose an image smaller than 2 MB.",
+            "error"
           );
           return; // Stop the function if the file is too big
         }
@@ -161,9 +163,9 @@ if (
           setStorageItem(STORAGE_KEYS.LOGGED_IN_USER, loggedInUser);
           if (profileAvatar)
             profileAvatar.querySelector("img").src = imageDataUrl;
-          alert("Profile image updated successfully!");
+          showToast("Profile image updated successfully!", "success");
         } catch (error) {
-          alert(`Error: ${error.message}`);
+          showToast(error.message || "Failed to update profile image.", "error");
         }
       }
     });
@@ -256,7 +258,7 @@ if (
           todoInput.value = "";
           renderTodos();
         } catch (error) {
-          alert(`Error: ${error.message}`);
+          showToast(error.message || "Failed to add task.", "error");
         }
       }
     });
@@ -284,7 +286,7 @@ if (
           todos = todos.filter(t => t._id !== id);
           renderTodos();
         } catch (error) {
-          alert(`Error: ${error.message}`);
+          showToast(error.message || "Failed to delete task.", "error");
         }
       }
     });
@@ -391,6 +393,7 @@ if (
                 renderNotices();
                 addNoticeForm.reset();
                 addNoticeModal.classList.remove("active");
+                showToast("Notice added successfully.", "success");
               };
               reader.readAsDataURL(file);
             } else {
@@ -399,9 +402,10 @@ if (
               renderNotices();
               addNoticeForm.reset();
               addNoticeModal.classList.remove("active");
+              showToast("Notice added successfully.", "success");
             }
           } catch (error) {
-            alert(`Error: ${error.message}`);
+            showToast(error.message || "Failed to add notice.", "error");
           }
         });
       }
@@ -421,8 +425,9 @@ if (
             await api.deleteNotice(noticeId);
             notices = notices.filter((n) => n._id !== noticeId);
             renderNotices();
+            showToast("Notice deleted.", "success");
           } catch (error) {
-            alert(`Error: ${error.message}`);
+            showToast(error.message || "Failed to delete notice.", "error");
           }
         }
       });

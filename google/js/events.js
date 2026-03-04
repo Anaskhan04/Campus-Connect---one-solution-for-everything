@@ -1,6 +1,7 @@
 import { getStorageItem } from './storage.js';
 import { STORAGE_KEYS } from './config.js';
 import { api } from './api.js';
+import { showToast } from './ui.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = getStorageItem(STORAGE_KEYS.LOGGED_IN_USER);
@@ -130,14 +131,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (eventIdInput.value) {
           // Update existing event
           await api.updateEvent(eventIdInput.value, eventData);
+          showToast("Event updated successfully.", "success");
         } else {
           // Add new event
           await api.createEvent(eventData);
+          showToast("Event created successfully.", "success");
         }
         await loadEvents();
         closeModal();
       } catch (error) {
-        alert(`Error: ${error.message}`);
+        showToast(error.message || "Failed to save event.", "error");
       }
     });
   }
@@ -162,8 +165,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const eventId = deleteBtn.dataset.id;
             await api.deleteEvent(eventId);
             await loadEvents();
+            showToast("Event deleted.", "success");
           } catch (error) {
-            alert(`Error: ${error.message}`);
+            showToast(error.message || "Failed to delete event.", "error");
           }
         }
       }

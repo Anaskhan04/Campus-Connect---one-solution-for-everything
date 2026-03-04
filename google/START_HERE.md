@@ -93,7 +93,7 @@ If you see a version number, you're good! ✅
    python -m http.server 3000
    ```
    
-   **Option B - Using Node.js:**
+   **Option B - Using Node.js:**  (this one) 
    ```bash
    npx serve -p 3000
    ```
