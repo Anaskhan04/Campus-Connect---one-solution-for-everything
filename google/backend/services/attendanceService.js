@@ -22,6 +22,9 @@ class AttendanceService {
 
     const stats = {};
     attendance.forEach((record) => {
+      // Exclude cancelled records from stats calculation
+      if (record.status === 'cancelled') return;
+
       if (!stats[record.subjectId]) {
         stats[record.subjectId] = {
           subjectId: record.subjectId,

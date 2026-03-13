@@ -8,8 +8,8 @@ const baseSignupBodySchema = {
 const publicSignupSchema = z.object({
   body: z.object({
     ...baseSignupBodySchema,
-    role: z.enum(['student', 'faculty'], {
-      errorMap: () => ({ message: 'Please select a valid role' }),
+    role: z.enum(['student'], {
+      errorMap: () => ({ message: 'Public signup is limited to students only.' }),
     }),
   }),
 });
@@ -100,7 +100,7 @@ const studentProfileSchema = z.object({
   body: z.object({
     name: z.string().min(1),
     rollNo: z.string().min(1),
-    year: z.string().min(1),
+    year: z.coerce.number().int().min(1).max(4),
     branch: z.string().min(1),
     intro: z.string().optional(),
     skills: z.array(z.string()).optional(),
@@ -132,7 +132,7 @@ const resourceSchema = z.object({
     title: z.string().min(1).max(100),
     description: z.string().min(1).max(500),
     branch: z.string().min(1),
-    year: z.string().min(1),
+    year: z.coerce.number().int().min(1).max(4),
     fileName: z.string().min(1),
     fileData: z.string().min(1),
   }),

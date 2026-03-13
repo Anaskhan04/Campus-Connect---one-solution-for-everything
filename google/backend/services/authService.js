@@ -18,11 +18,9 @@ class AuthService {
     // Determine assigned role:
     // 1. If requester is admin, accept any valid role they provide.
     // 2. If it's a public signup, allow 'student' ONLY.
-    // 3. Default to 'student' ONLY if no role is provided.
     let assignedRole = 'student';
-    const publicRoles = ['student'];
-
-    if (role && (isAdminRequester || publicRoles.includes(role))) {
+    
+    if (isAdminRequester && role) {
       assignedRole = role;
     }
     
