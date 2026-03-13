@@ -15,3 +15,4 @@ createRoot(document.getElementById('root')!).render(
     </GoogleOAuthProvider>
   </StrictMode>
 )
+console.log("ENV:", import.meta.env);
