@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Campus Connect Project",
   "scripts": {
+    "start": "node server.js",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
