@@ -35,13 +35,12 @@ class API {
    */
   async request(endpoint: string, options: any = {}) {
     const url = `${API_BASE_URL}${endpoint}`;
-    const currentToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
     
     const config: any = {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(currentToken && { Authorization: `Bearer ${currentToken}` }),
+        ...(this.token && { Authorization: `Bearer ${this.token}` }),
         ...options.headers,
       },
     };
@@ -243,12 +242,11 @@ class API {
   async uploadImage(file: File) {
     const formData = new FormData();
     formData.append('image', file);
-    const currentToken = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
 
     const response = await fetch(`${API_BASE_URL}/upload/image`, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${currentToken}`,
+        ...(this.token && { Authorization: `Bearer ${this.token}` }),
       },
       body: formData,
     });
