@@ -116,6 +116,19 @@ class API {
     return data;
   }
 
+  async googleLogin(credential: string) {
+    const data = await this.request('/auth/google', {
+      method: 'POST',
+      body: { credential },
+    });
+    if (data.token) {
+      this.token = data.token;
+      localStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, data.token);
+      localStorage.setItem(STORAGE_KEYS.LOGGED_IN_USER, JSON.stringify(data.user));
+    }
+    return data;
+  }
+
   logout() {
     this.token = null;
     localStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);

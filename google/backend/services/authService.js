@@ -1,7 +1,63 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 class AuthService {
+  async googleLogin(idToken) {
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      const { sub: googleId, email, name, picture } = payload;
+
+      let user = await User.findOne({ 
+        $or: [{ googleId }, { email: email.toLowerCase() }] 
+      });
+
+      if (!user) {
+        // Create new student user if not found
+        // Use part of email as username if name is not unique enough
+        const baseUsername = email.split('@')[0].toLowerCase();
+        let uniqueUsername = baseUsername;
+        let counter = 1;
+
+        while (await User.findOne({ username: uniqueUsername })) {
+          uniqueUsername = `${baseUsername}${counter}`;
+          counter++;
+        }
+
+        user = new User({
+          username: uniqueUsername,
+          email: email.toLowerCase(),
+          googleId,
+          role: 'student', // Default role for Google login
+          profileImage: picture,
+        });
+        await user.save();
+      } else if (!user.googleId) {
+        // Link Google account to existing email account
+        user.googleId = googleId;
+        if (!user.profileImage) user.profileImage = picture;
+        await user.save();
+      }
+
+      const token = jwt.sign(
+        { userId: user._id, username: user.username, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      return { user, token };
+    } catch (error) {
+      console.error('Google Verification Error:', error);
+      throw new Error('Google authentication failed');
+    }
+  }
+
   async signupUser(username, password, role, requester = null) {
     const lowerUsername = username.toLowerCase();
     const existingUser = await User.findOne({ username: lowerUsername });

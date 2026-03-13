@@ -9,9 +9,21 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  email: {
+    type: String,
+    unique: true,
+    sparse: true, // Allow multiple nulls if not using Google
+    trim: true,
+    lowercase: true,
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   password: {
     type: String,
-    required: true,
+    required: function() { return !this.googleId; }, // Only required if not a Google user
   },
   role: {
     type: String,

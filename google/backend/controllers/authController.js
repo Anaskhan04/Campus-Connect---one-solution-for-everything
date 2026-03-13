@@ -39,6 +39,25 @@ class AuthController {
     }
   }
 
+  async googleLogin(req, res, next) {
+    try {
+      const { credential } = req.body;
+      const { user, token } = await authService.googleLogin(credential);
+
+      res.json({
+        success: true,
+        token,
+        user: {
+          username: user.username,
+          role: user.role,
+          profileImage: user.profileImage,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async updateProfileImage(req, res, next) {
     try {
       const userId = req.user.userId;

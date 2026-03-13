@@ -14,6 +14,7 @@ import {
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
+import { GoogleLogin } from "@react-oauth/google";
 import {
   GraduationCap,
   User,
@@ -69,8 +70,24 @@ export default function LoginPage() {
         });
         setActiveTab("login");
       }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    setIsLoading(true);
+    setErrorMsg("");
+    try {
+      if (credentialResponse.credential) {
+        const data = await api.googleLogin(credentialResponse.credential);
+        toast.success("Welcome back!", {
+          description: `Logged in with Google as ${data.user.username}.`,
+        });
+        navigate("/");
+      }
     } catch (error: any) {
-      setErrorMsg(error.message || "Something went wrong. Please try again.");
+      setErrorMsg(error.message || "Google login failed.");
     } finally {
       setIsLoading(false);
     }
@@ -276,6 +293,32 @@ export default function LoginPage() {
               )}
             </Button>
           </form>
+
+          {activeTab === "login" && (
+            <>
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-slate-50 px-2 text-slate-500">Or continue with</span>
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => {
+                    setErrorMsg("Google Login Failed");
+                  }}
+                  useOneTap
+                  theme="filled_blue"
+                  shape="pill"
+                  width="100%"
+                />
+              </div>
+            </>
+          )}
 
           {/* Switch hint */}
           <p className="text-center text-sm text-slate-500 mt-6">
