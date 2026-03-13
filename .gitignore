@@ -1,0 +1,29 @@
+# Common
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.local
+.env.*.local
+
+# Backend specific
+google/backend/node_modules/
+google/backend/.env
+google/backend/dist/
+google/backend/build/
+
+# Frontend specific
+frontend-modern/node_modules/
+frontend-modern/dist/
+frontend-modern/dist-ssr/
+frontend-modern/*.local
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
