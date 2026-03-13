@@ -77,23 +77,22 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Campus Connect API is running' });
 });
 
-// Serve modern frontend static files
-app.use(express.static(modernRoot));
+// Serve frontend only if STATIC_PATH is provided
+if (process.env.STATIC_PATH) {
+  app.use(express.static(modernRoot));
 
-// Handle React routing, return all requests to React app
-app.get('*', (req, res, next) => {
-  // If request is for API, skip to next handlers
-  if (req.url.startsWith('/api')) {
-    return next();
-  }
-  res.sendFile(path.join(modernRoot, 'index.html'));
-});
+  app.get('*', (req, res, next) => {
+    if (req.url.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(modernRoot, 'index.html'));
+  });
+}
 
 // Centralized Error handling middleware
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 5001;
-
+const PORT = process.env.PORT || 10000;
 const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
   console.log(`API available at http://localhost:${PORT}/api`);
