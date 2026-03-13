@@ -155,13 +155,45 @@ export default function DashboardPage() {
       className="space-y-8 pb-10"
     >
       {/* Welcome Section */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {greeting}, <span className="text-primary capitalize">{user?.username}</span>!
-        </h1>
-        <p className="text-muted-foreground text-lg">
-          Here's your academic overview for today.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            {greeting}, <span className="text-primary capitalize">{user?.username}</span>!
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Here's your academic overview for today.
+          </p>
+        </div>
+        
+        {/* REC Banda Quick Links */}
+        <div className="flex flex-wrap gap-2 pb-1">
+          <a href="http://172.16.1.1:8090/httpclient.html" target="_blank" rel="noopener noreferrer">
+            <Badge variant="secondary" className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+              <span className="size-2 rounded-full bg-blue-500" />
+              REC internet
+            </Badge>
+          </a>
+          <a href="https://apps.recbanda.ac.in/ims/frmLogin.aspx" target="_blank" rel="noopener noreferrer">
+            <Badge variant="secondary" className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+              <span className="size-2 rounded-full bg-emerald-500" />
+              REC ERP
+            </Badge>
+          </a>
+          <a href="https://oneview.aktu.ac.in/WebPages/aktu/OneView.aspx" target="_blank" rel="noopener noreferrer">
+            <Badge variant="secondary" className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+              <span className="size-2 rounded-full bg-orange-500" />
+              AKTU One-View
+            </Badge>
+          </a>
+          <Badge variant="secondary" onClick={() => (window.location.href = '/attendance')} className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+            <span className="size-2 rounded-full bg-purple-500" />
+            Attendance
+          </Badge>
+          <Badge variant="secondary" onClick={() => (window.location.href = '/resources')} className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+            <span className="size-2 rounded-full bg-slate-400" />
+            Resources
+          </Badge>
+        </div>
       </div>
 
       {/* Stats Grid */}
