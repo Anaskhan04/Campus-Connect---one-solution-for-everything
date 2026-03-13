@@ -1,38 +1,44 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  recipient: { 
-    type: String, 
+  recipient: {
+    type: String,
     required: true,
-    index: true
+    index: true,
   },
-  type: { 
-    type: String, 
-    required: true,
-    enum: ['complaint', 'event', 'notice', 'general']
-  },
-  title: { 
-    type: String, 
-    required: true 
-  },
-  message: { 
-    type: String, 
-    required: true 
-  },
-  complaintId: { 
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Complaint'
+    ref: 'User',
+    index: true,
   },
-  read: { 
-    type: Boolean, 
-    default: false 
+  type: {
+    type: String,
+    required: true,
+    enum: ['complaint', 'event', 'notice', 'general'],
   },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
+  title: {
+    type: String,
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true,
+  },
+  complaintId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Complaint',
+  },
+  read: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
+// Compound index for efficient retrieval of latest notifications per user
+notificationSchema.index({ recipient: 1, createdAt: -1 });
+
 module.exports = mongoose.model('Notification', notificationSchema);
-
-

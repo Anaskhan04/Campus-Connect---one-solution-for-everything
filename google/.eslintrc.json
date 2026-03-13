@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": ["eslint:recommended", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off"
+  },
+  "globals": {
+    "studentsData": "readonly",
+    "facultyData": "readonly",
+    "alumniData": "readonly",
+    "eventsData": "readonly",
+    "clubsData": "readonly",
+    "subjectsByYearBranch": "readonly",
+    "aiToolsData": "readonly",
+    "careerData": "readonly"
+  }
+}

@@ -1,90 +1,59 @@
 const express = require('express');
 const router = express.Router();
-const Event = require('../models/Event');
+const eventService = require('../services/eventService');
 const authMiddleware = require('../middleware/auth');
+const { eventSchema, validate } = require('../validation/authSchema');
 
 // Get all events
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const events = await Event.find().sort({ date: 1 });
-    res.json(events);
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const result = await eventService.getAllEvents(page, limit);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Get event by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
+    const event = await eventService.getEventById(req.params.id);
     res.json(event);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Create event
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validate(eventSchema), async (req, res, next) => {
   try {
-    const eventData = {
-      ...req.body,
-      createdBy: req.user.username
-    };
-    const event = new Event(eventData);
-    await event.save();
+    const event = await eventService.createEvent(req.body, req.user.username);
     res.status(201).json(event);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Update event
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, validate(eventSchema), async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-
-    // Only creator or faculty can update
-    if (event.createdBy !== req.user.username && req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    const updatedEvent = await Event.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
+    const updatedEvent = await eventService.updateEvent(req.params.id, req.body, req.user);
     res.json(updatedEvent);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Delete event
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
-    const event = await Event.findById(req.params.id);
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
-    }
-
-    // Only creator or faculty can delete
-    if (event.createdBy !== req.user.username && req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    await Event.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Event deleted' });
+    const result = await eventService.deleteEvent(req.params.id, req.user);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 module.exports = router;
-

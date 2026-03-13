@@ -1,0 +1,37 @@
+═══════════════════════════════════════════════════════════
+  CAMPUS CONNECT - QUICK START GUIDE (MODERN)
+═══════════════════════════════════════════════════════════
+
+🚀 START HERE - Simple Step-by-Step Guide
+
+### STEP 1: Get MongoDB Database (FREE)
+1. Go to: https://www.mongodb.com/cloud/atlas/register
+2. Sign up and Create a FREE Database
+3. Create a Database User and SAVE the password
+4. Network Access -> Add IP Address -> "Allow Access from Anywhere"
+5. Database -> Connect -> "Connect your application"
+6. Copy your connection string. 
+   EXAMPLE: mongodb+srv://user:pass@cluster.mongodb.net/campusconnect
+
+### STEP 2: Start Backend Server
+1. Open a terminal
+2. cd google/backend
+3. npm install (first time only)
+4. Open .env file and paste your MongoDB string:
+   MONGODB_URI=PASTE_YOUR_STRING_HERE
+   JWT_SECRET=super-secret-key-123
+   PORT=5001
+5. npm start
+   KEEP THIS WINDOW OPEN! ✅
+
+### STEP 3: Start Modern Frontend
+1. Open a NEW terminal
+2. cd frontend-modern
+3. npm install (first time only)
+4. npm run dev
+5. Open browser and go to: http://localhost:5173
+
+═══════════════════════════════════════════════════════════
+✅ THAT'S IT! You're done!
+Login/Signup to start using the new Campus Connect.
+═══════════════════════════════════════════════════════════

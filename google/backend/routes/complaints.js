@@ -1,171 +1,81 @@
 const express = require('express');
 const router = express.Router();
-const Complaint = require('../models/Complaint');
+const complaintService = require('../services/complaintService');
 const authMiddleware = require('../middleware/auth');
+const requireRole = require('../middleware/requireRole');
+const { complaintSchema, complaintStatusSchema, validate } = require('../validation/authSchema');
 
 // Get all complaints for the logged-in user
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res, next) => {
   try {
-    const complaints = await Complaint.find({ username: req.user.username })
-      .sort({ createdAt: -1 });
-    res.json(complaints);
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const result = await complaintService.getComplaintsByUsername(req.user.username, page, limit);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Get all complaints (for faculty/admin)
-router.get('/all', authMiddleware, async (req, res) => {
+router.get('/all', authMiddleware, requireRole('faculty'), async (req, res, next) => {
   try {
-    if (req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-    const complaints = await Complaint.find().sort({ createdAt: -1 });
-    res.json(complaints);
+    const page = parseInt(req.query.page);
+    const limit = parseInt(req.query.limit) || 10;
+    const result = await complaintService.getAllComplaints(page, limit);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Get complaint by ID
-router.get('/:id', authMiddleware, async (req, res) => {
+router.get('/:id', authMiddleware, async (req, res, next) => {
   try {
-    const complaint = await Complaint.findById(req.params.id);
-    if (!complaint) {
-      return res.status(404).json({ error: 'Complaint not found' });
-    }
-
-    // Users can only view their own complaints, faculty can view all
-    if (complaint.username !== req.user.username && req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
+    const complaint = await complaintService.getComplaintById(req.params.id, req.user);
     res.json(complaint);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Create complaint
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validate(complaintSchema), async (req, res, next) => {
   try {
-    const Notification = require('../models/Notification');
-    const Faculty = require('../models/Faculty');
-    
-    const complaintData = {
-      ...req.body,
-      username: req.user.username
-    };
-    const complaint = new Complaint(complaintData);
-    await complaint.save();
-    
-    // Create notification for relevant faculty based on category
-    // Map category to faculty designation
-    const categoryMapping = {
-      "Director": "Director",
-      "HOD": "HOD",
-      "Dean (DSW)": "Dean",
-      "Placement Cell": "Placement Officer",
-      "Anti Ragging": "Anti Ragging Officer",
-      "Hostel Warden": "Hostel Warden",
-      "Registrar": "Registrar",
-      "Direct to AKTU": "AKTU",
-      "Other": "Other"
-    };
-    
-    const designation = categoryMapping[complaint.category] || "Other";
-    
-    // Find faculty members with matching designation
-    // If subcategory exists (like HOD - IT), also match by branch
-    const query = { designation: designation };
-    if (complaint.subCategory) {
-      // Map subcategory to branch if it's a department
-      const branchMapping = {
-        "IT": "Information Technology",
-        "EE": "Electrical Engineering",
-        "ME": "Mechanical Engineering"
-      };
-      query.branch = branchMapping[complaint.subCategory] || complaint.subCategory;
-    }
-    
-    const facultyMembers = await Faculty.find(query);
-    
-    // Create notifications for all matching faculty members
-    for (const faculty of facultyMembers) {
-      const notification = new Notification({
-        recipient: faculty.username,
-        type: 'complaint',
-        title: `New Complaint: ${complaint.subject}`,
-        message: `You have received a new complaint in category "${complaint.category}"${complaint.subCategory ? ` - ${complaint.subCategory}` : ''} from ${req.user.username}`,
-        complaintId: complaint._id
-      });
-      await notification.save();
-    }
-    
-    // If no specific faculty found, notify all faculty (fallback)
-    if (facultyMembers.length === 0) {
-      const allFaculty = await Faculty.find().limit(5); // Limit to avoid spam
-      for (const faculty of allFaculty) {
-        const notification = new Notification({
-          recipient: faculty.username,
-          type: 'complaint',
-          title: `New Complaint: ${complaint.subject}`,
-          message: `You have received a new complaint in category "${complaint.category}" from ${req.user.username}`,
-          complaintId: complaint._id
-        });
-        await notification.save();
-      }
-    }
-    
+    const complaint = await complaintService.createComplaint(req.body, req.user.username);
     res.status(201).json(complaint);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Update complaint status (for faculty)
-router.put('/:id/status', authMiddleware, async (req, res) => {
-  try {
-    if (req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
+router.put(
+  '/:id/status',
+  authMiddleware,
+  requireRole('faculty'),
+  validate(complaintStatusSchema),
+  async (req, res, next) => {
+    try {
+      const complaint = await complaintService.updateComplaintStatus(
+        req.params.id,
+        req.body.status
+      );
+      res.json(complaint);
+    } catch (error) {
+      next(error);
     }
-
-    const { status } = req.body;
-    const complaint = await Complaint.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true }
-    );
-
-    if (!complaint) {
-      return res.status(404).json({ error: 'Complaint not found' });
-    }
-
-    res.json(complaint);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
 // Delete complaint
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
-    const complaint = await Complaint.findById(req.params.id);
-    if (!complaint) {
-      return res.status(404).json({ error: 'Complaint not found' });
-    }
-
-    // Users can only delete their own complaints
-    if (complaint.username !== req.user.username) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    await Complaint.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Complaint deleted' });
+    const result = await complaintService.deleteComplaint(req.params.id, req.user.username);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 module.exports = router;
-

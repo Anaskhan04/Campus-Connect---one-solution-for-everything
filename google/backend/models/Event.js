@@ -1,43 +1,45 @@
 const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema({
-  title: { 
-    type: String, 
-    required: true 
-  },
-  description: { 
-    type: String, 
-    required: true 
-  },
-  date: { 
-    type: Date, 
-    required: true 
-  },
-  time: { 
+  title: {
     type: String,
-    default: ''
+    required: true,
   },
-  location: { 
+  description: {
     type: String,
-    default: ''
+    required: true,
   },
-  organizer: { 
-    type: String, 
-    required: true 
+  date: {
+    type: Date,
+    required: true,
   },
-  image: { 
+  time: {
     type: String,
-    default: null
+    default: '',
+  },
+  location: {
+    type: String,
+    default: '',
+  },
+  organizer: {
+    type: String,
+    required: true,
+  },
+  image: {
+    type: String,
+    default: null,
   },
   createdBy: {
     type: String,
-    required: true
+    required: true,
   },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
-  }
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model('Event', eventSchema);
+// Text index for search
+eventSchema.index({ title: 'text', description: 'text', organizer: 'text' });
 
+module.exports = mongoose.model('Event', eventSchema);

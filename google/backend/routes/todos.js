@@ -1,76 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const Todo = require('../models/Todo');
+const todoService = require('../services/todoService');
 const authMiddleware = require('../middleware/auth');
+const { todoSchema, validate } = require('../validation/authSchema');
 
 // Get all todos for the logged-in user
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res, next) => {
   try {
-    const todos = await Todo.find({ username: req.user.username })
-      .sort({ createdAt: -1 });
+    const todos = await todoService.getTodos(req.user.username);
     res.json(todos);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Create todo
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validate(todoSchema), async (req, res, next) => {
   try {
-    const todo = new Todo({
-      username: req.user.username,
-      text: req.body.text,
-      completed: false
-    });
-    await todo.save();
+    const todo = await todoService.createTodo(req.user.username, req.body.text);
     res.status(201).json(todo);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Update todo
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, validate(todoSchema), async (req, res, next) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-    if (!todo) {
-      return res.status(404).json({ error: 'Todo not found' });
-    }
-
-    if (todo.username !== req.user.username) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    const updatedTodo = await Todo.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
+    const updatedTodo = await todoService.updateTodo(req.params.id, req.user.username, req.body);
     res.json(updatedTodo);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Delete todo
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-    if (!todo) {
-      return res.status(404).json({ error: 'Todo not found' });
-    }
-
-    if (todo.username !== req.user.username) {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    await Todo.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Todo deleted' });
+    const result = await todoService.deleteTodo(req.params.id, req.user.username);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 module.exports = router;
-

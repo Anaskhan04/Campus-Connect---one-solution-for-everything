@@ -1,96 +1,72 @@
 const express = require('express');
 const router = express.Router();
-const Notice = require('../models/Notice');
+const noticeService = require('../services/noticeService');
 const authMiddleware = require('../middleware/auth');
+const requireRole = require('../middleware/requireRole');
+const { noticeSchema, validate } = require('../validation/authSchema');
 
 // Get all notices
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
-    const notices = await Notice.find().sort({ createdAt: -1 });
-    res.json(notices);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = parseInt(req.query.limit) || 10;
+    const result = await noticeService.getAllNotices(page, limit);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Get notice by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res, next) => {
   try {
-    const notice = await Notice.findById(req.params.id);
-    if (!notice) {
-      return res.status(404).json({ error: 'Notice not found' });
-    }
+    const notice = await noticeService.getNoticeById(req.params.id);
     res.json(notice);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // Create notice (faculty only)
-router.post('/', authMiddleware, async (req, res) => {
-  try {
-    if (req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Only faculty can create notices' });
+router.post(
+  '/',
+  authMiddleware,
+  requireRole('faculty'),
+  validate(noticeSchema),
+  async (req, res, next) => {
+    try {
+      const notice = await noticeService.createNotice(req.body, req.user.username);
+      res.status(201).json(notice);
+    } catch (error) {
+      next(error);
     }
-
-    const noticeData = {
-      ...req.body,
-      createdBy: req.user.username,
-      date: req.body.date || new Date().toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      })
-    };
-
-    const notice = new Notice(noticeData);
-    await notice.save();
-    res.status(201).json(notice);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
 // Update notice
-router.put('/:id', authMiddleware, async (req, res) => {
-  try {
-    if (req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
+router.put(
+  '/:id',
+  authMiddleware,
+  requireRole('faculty'),
+  validate(noticeSchema),
+  async (req, res, next) => {
+    try {
+      const notice = await noticeService.updateNotice(req.params.id, req.body);
+      res.json(notice);
+    } catch (error) {
+      next(error);
     }
-
-    const notice = await Notice.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!notice) {
-      return res.status(404).json({ error: 'Notice not found' });
-    }
-
-    res.json(notice);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
 // Delete notice
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', authMiddleware, requireRole('faculty'), async (req, res, next) => {
   try {
-    if (req.user.role !== 'faculty') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
-    const notice = await Notice.findByIdAndDelete(req.params.id);
-    if (!notice) {
-      return res.status(404).json({ error: 'Notice not found' });
-    }
-
-    res.json({ message: 'Notice deleted' });
+    const result = await noticeService.deleteNotice(req.params.id);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 module.exports = router;
-
