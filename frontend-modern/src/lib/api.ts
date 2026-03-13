@@ -5,6 +5,11 @@
 import { STORAGE_KEYS } from './config';
 
 const getApiBaseUrl = () => {
+  // Check if an explicit API URL is provided via environment variables (Vite-style)
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
   const { hostname, protocol, port } = window.location;
   
   // If running on localhost but not on the backend port, use the default backend dev URL
