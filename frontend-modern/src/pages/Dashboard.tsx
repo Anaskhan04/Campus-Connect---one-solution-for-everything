@@ -193,6 +193,24 @@ export default function DashboardPage() {
             <span className="size-2 rounded-full bg-slate-400" />
             Resources
           </Badge>
+          <a href="https://aktu.ac.in/circulars.html" target="_blank" rel="noopener noreferrer">
+            <Badge variant="secondary" className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+              <span className="size-2 rounded-full bg-red-400" />
+              Circulars
+            </Badge>
+          </a>
+          <a href="https://aktu.ac.in/syllabus.html" target="_blank" rel="noopener noreferrer">
+            <Badge variant="secondary" className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+              <span className="size-2 rounded-full bg-yellow-500" />
+              Syllabus
+            </Badge>
+          </a>
+          <a href="https://www.abesit.in/library/question-paper-bank/" target="_blank" rel="noopener noreferrer">
+            <Badge variant="secondary" className="px-3 py-1.5 cursor-pointer hover:bg-slate-200 transition-colors border-none bg-slate-100 text-slate-700 font-semibold gap-1.5">
+              <span className="size-2 rounded-full bg-pink-500" />
+              PYQs
+            </Badge>
+          </a>
         </div>
       </div>
 
@@ -319,18 +337,24 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 relative z-10">
-              <Button variant="secondary" className="w-full justify-between bg-white/10 hover:bg-white/20 border-none text-white shadow-none group">
-                Log Attendance
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button variant="secondary" className="w-full justify-between bg-white/10 hover:bg-white/20 border-none text-white shadow-none group">
-                Submit Complaint
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button variant="secondary" className="w-full justify-between bg-white/10 hover:bg-white/20 border-none text-white shadow-none group">
-                Download Resources
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
-              </Button>
+              <a href="https://oneview.aktu.ac.in/WebPages/aktu/OneView.aspx" target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button variant="secondary" className="w-full justify-between bg-white/10 hover:bg-white/20 border-none text-white shadow-none group">
+                  AKTU One-View
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </a>
+              <a href="https://aktu.ac.in/circulars.html" target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button variant="secondary" className="w-full justify-between bg-white/10 hover:bg-white/20 border-none text-white shadow-none group">
+                  AKTU Circulars
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </a>
+              <a href="https://www.abesit.in/library/question-paper-bank/" target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button variant="secondary" className="w-full justify-between bg-white/10 hover:bg-white/20 border-none text-white shadow-none group">
+                  Previous Year Papers
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </a>
             </CardContent>
             {/* Decorative Background Elements */}
             <div className="absolute -right-10 -bottom-10 size-48 rounded-full bg-white/5 blur-2xl" />
