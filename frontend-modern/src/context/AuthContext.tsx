@@ -15,6 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (username: string, password: string, role: string) => Promise<void>;
+  googleLogin: (credential: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: User) => void;
   socket: Socket | null;
@@ -94,6 +95,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const googleLogin = async (credential: string) => {
+    try {
+      const data = await api.googleLogin(credential);
+      setUser(data.user);
+    } catch (error) {
+      console.error('Google login error in context:', error);
+      throw error;
+    }
+  };
+
   const logout = () => {
     api.logout();
     setUser(null);
@@ -110,6 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAuthenticated: !!user,
         isLoading,
         login,
+        googleLogin,
         logout,
         updateUser,
         socket

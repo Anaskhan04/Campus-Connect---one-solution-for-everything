@@ -37,7 +37,7 @@ const features = [
 ];
 
 export default function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, googleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"login" | "signup">("login");
   const [isLoading, setIsLoading] = useState(false);
@@ -80,9 +80,9 @@ export default function LoginPage() {
     setErrorMsg("");
     try {
       if (credentialResponse.credential) {
-        const data = await api.googleLogin(credentialResponse.credential);
+        await googleLogin(credentialResponse.credential);
         toast.success("Welcome back!", {
-          description: `Logged in with Google as ${data.user.username}.`,
+          description: "Logged in successfully with Google.",
         });
         navigate("/");
       }
