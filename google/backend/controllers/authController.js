@@ -29,6 +29,7 @@ class AuthController {
           username: user.username,
           role: user.role,
           profileImage: user.profileImage,
+          isProfileSetup: user.isProfileSetup,
         },
       });
     } catch (error) {
@@ -51,10 +52,30 @@ class AuthController {
           username: user.username,
           role: user.role,
           profileImage: user.profileImage,
+          isProfileSetup: user.isProfileSetup,
         },
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async updateProfile(req, res, next) {
+    try {
+      const userId = req.user.userId;
+      const updatedUser = await authService.updateProfile(userId, req.body);
+      res.json({ 
+        success: true, 
+        message: 'Profile updated successfully',
+        user: {
+          username: updatedUser.username,
+          role: updatedUser.role,
+          profileImage: updatedUser.profileImage,
+          isProfileSetup: updatedUser.isProfileSetup
+        }
+      });
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -85,6 +106,7 @@ class AuthController {
           username: user.username,
           role: user.role,
           profileImage: user.profileImage,
+          isProfileSetup: user.isProfileSetup,
         },
       });
     } catch (error) {

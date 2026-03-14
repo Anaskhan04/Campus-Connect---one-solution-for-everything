@@ -146,6 +146,17 @@ class API {
     return data;
   }
 
+  async updateProfile(profileData: any) {
+    const data = await this.request('/auth/profile', {
+      method: 'PUT',
+      body: profileData,
+    });
+    if (data.user) {
+      localStorage.setItem(STORAGE_KEYS.LOGGED_IN_USER, JSON.stringify(data.user));
+    }
+    return data;
+  }
+
   async getCurrentUser() {
     return this.request('/auth/me');
   }

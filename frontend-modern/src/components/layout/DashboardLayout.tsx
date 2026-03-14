@@ -57,6 +57,7 @@ import { useAuth } from "@/context/AuthContext"
 import { Link, useLocation } from "react-router-dom"
 import { Toaster } from "@/components/ui/sonner"
 import { CommandMenu } from "@/components/CommandMenu"
+import { ProfileModal } from "@/components/profile/ProfileModal"
 
 const data = {
   navMain: [
@@ -146,6 +147,20 @@ const data = {
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth()
   const location = useLocation()
+  const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false)
+  const [isFirstTime, setIsFirstTime] = React.useState(false)
+
+  React.useEffect(() => {
+    if (user && user.isProfileSetup === false) {
+      setIsProfileModalOpen(true)
+      setIsFirstTime(true)
+    }
+  }, [user])
+
+  const openProfile = () => {
+    setIsFirstTime(false)
+    setIsProfileModalOpen(true)
+  }
 
   return (
     <SidebarProvider>
@@ -255,7 +270,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={openProfile}>
                       <UserCheck className="mr-2 size-4" />
                       Profile
                     </DropdownMenuItem>
@@ -294,6 +309,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </main>
       </SidebarInset>
       <Toaster position="top-right" richColors />
+      <ProfileModal 
+        isOpen={isProfileModalOpen} 
+        onClose={() => setIsProfileModalOpen(false)} 
+        isFirstTime={isFirstTime}
+      />
     </SidebarProvider>
   )
 }

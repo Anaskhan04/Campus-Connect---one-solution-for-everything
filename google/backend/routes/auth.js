@@ -23,6 +23,9 @@ router.post('/login', validate(loginSchema), authController.login);
 // Google Login
 router.post('/google', authController.googleLogin);
 
+// Update profile (full setup)
+router.put('/profile', authMiddleware, authController.updateProfile);
+
 // Update profile image
 router.put('/profile-image', authMiddleware, authController.updateProfileImage);
 

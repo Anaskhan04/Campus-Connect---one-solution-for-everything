@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  isProfileSetup: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

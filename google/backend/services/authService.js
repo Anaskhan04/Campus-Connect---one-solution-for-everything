@@ -130,6 +130,49 @@ class AuthService {
     return updatedUser;
   }
 
+  async updateProfile(userId, profileData) {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Update user basic info
+    if (profileData.profileImage) user.profileImage = profileData.profileImage;
+    user.isProfileSetup = true;
+    await user.save();
+
+    // Create or Update Student/Faculty record
+    if (user.role === 'student') {
+      const Student = require('../models/Student');
+      await Student.findOneAndUpdate(
+        { username: user.username },
+        { 
+          ...profileData,
+          username: user.username,
+          email: profileData.email || user.email,
+          year: parseInt(profileData.year),
+          skills: Array.isArray(profileData.skills) 
+            ? profileData.skills 
+            : profileData.skills?.split(',').map(s => s.trim()).filter(s => s !== '')
+        },
+        { upsert: true, new: true }
+      );
+    } else if (user.role === 'faculty') {
+      const Faculty = require('../models/Faculty');
+      await Faculty.findOneAndUpdate(
+        { username: user.username },
+        { 
+          ...profileData,
+          username: user.username,
+          email: profileData.email || user.email
+        },
+        { upsert: true, new: true }
+      );
+    }
+
+    return user;
+  }
+
   async getCurrentUser(username) {
     const user = await User.findOne({ username });
     if (!user) {

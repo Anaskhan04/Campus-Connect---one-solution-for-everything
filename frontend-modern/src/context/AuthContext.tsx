@@ -6,8 +6,10 @@ import { toast } from 'sonner';
 
 interface User {
   username: string;
+  email?: string;
   role: 'student' | 'faculty' | 'admin';
   profileImage?: string;
+  isProfileSetup?: boolean;
 }
 
 interface AuthContextType {
